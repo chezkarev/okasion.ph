@@ -145,22 +145,74 @@ nav ul a:hover{background:var(--blue)}
 footer{padding:40px 0 60px;display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;align-items:center;border-top:2px dashed var(--cacao)}
 footer .logo{height:28px}
 @media(max-width:860px){.demo,.problem,.who{grid-template-columns:1fr}.board{display:none}nav ul{display:none}.hero{padding:40px 0 80px;min-height:auto}section{padding:72px 0}.notes{min-height:520px}}
+
+/* ---- mobile fixes ---- */
+html,body{overflow-x:clip;max-width:100%}
+@media(hover:hover){.sticker:hover{transform:rotate(0) scale(1.05)!important;z-index:5}.note:hover{transform:rotate(0) scale(1.04)!important;z-index:5}}
+@media(max-width:860px){
+  .wrap{padding:0 20px}
+  nav{padding:16px 0}.logo{height:30px}nav .btn{padding:10px 16px;font-size:13px}
+  .hero h1{font-size:clamp(44px,12vw,64px);max-width:none}
+  .hero .tagline{font-size:22px}
+  .cta .btn{width:100%;justify-content:center}
+  .ribbon{margin:0;transform:none;padding:10px 0}.ribbon div{font-size:16px}
+  .problem{gap:28px}
+  .notes{min-height:0;display:flex;flex-direction:column;gap:18px;padding-top:12px}
+  .note{position:static!important;width:min(300px,92%);transform:rotate(-1.5deg)!important;font-size:21px}
+  .note:nth-child(even){align-self:flex-end;transform:rotate(1.5deg)!important}
+  .passes{gap:22px}.pass{transform:none!important}
+  .cats{grid-template-columns:1fr}
+  .demo{gap:36px}.phone{max-width:340px;box-shadow:6px 6px 0 var(--cacao)}
+  .who{gap:20px}.who .col{padding:24px 20px}.who .stampx{width:70px;height:70px}
+  .polas{display:grid;grid-template-columns:1fr 1fr;gap:18px 14px;justify-items:center}
+  .pola{width:100%;max-width:170px;padding:8px 8px 12px}
+  .pola:nth-child(odd){transform:rotate(-1.5deg)}.pola:nth-child(even){transform:rotate(1.5deg)}
+  .pola:nth-child(5){grid-column:span 2}
+  .pola .name{position:static;margin-top:10px;font-size:17px}
+  .pola .tags{position:static;display:block;text-align:left;max-width:none;margin-top:2px;font-size:9px}
+  .big{padding:56px 22px;border-radius:20px}.big .star{display:none}
+  .form input{min-width:0;width:100%}.form .btn{width:100%;justify-content:center}
+  footer{justify-content:center;text-align:center}
+}
+
+/* ---- navigation & play ---- */
+.progress{position:fixed;left:0;top:0;height:4px;width:0;background:var(--brick);z-index:100;transition:width .1s linear}
+.navbar{position:sticky;top:0;z-index:40;background:rgba(247,247,245,.9);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav ul a.active{background:var(--blue)}
+.ribbon:hover div{animation-play-state:paused}
+.drag{cursor:grab;touch-action:none}.drag.held{cursor:grabbing;z-index:20!important;transition:none!important;box-shadow:var(--hard),0 24px 40px -16px rgba(59,42,34,.4)!important}
+.note,.sticker{will-change:transform}
+.reveal{opacity:0;transform:translateY(14px) rotate(var(--r,0))}
+.reveal.in{opacity:1;transform:translateY(0) rotate(var(--r,0));transition:opacity .5s ease,transform .5s cubic-bezier(.2,.8,.2,1)}
+.tagcount{display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:var(--mustard);padding:6px 12px;font-family:"Space Mono",monospace;font-size:11px;box-shadow:3px 3px 0 var(--cacao);transform:rotate(-1deg)}
+.tagcount b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:16px}
+.totop{position:fixed;right:22px;bottom:22px;width:56px;height:56px;border-radius:50%;background:var(--paper);border:2px solid var(--cacao);box-shadow:var(--hard);display:grid;place-items:center;z-index:60;opacity:0;pointer-events:none;transform:translateY(10px) rotate(-8deg);transition:opacity .25s,transform .25s;font-family:"Space Mono",monospace;font-size:9px;text-transform:uppercase;line-height:1.1;text-align:center;cursor:pointer}
+.totop.show{opacity:1;pointer-events:auto;transform:rotate(-8deg)}
+.totop:hover{transform:rotate(0)}
+.pola,.pass,.cat{transition:transform .25s,box-shadow .25s}
+.pass:hover{transform:translate(-3px,-3px) rotate(0)!important;box-shadow:var(--hard)}
+.cat:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--cacao)}
+.pola:hover{transform:rotate(0) translateY(-6px)!important;box-shadow:var(--hard),0 10px 24px rgba(59,42,34,.15);z-index:5}
+@media(max-width:860px){.totop{right:14px;bottom:14px;width:48px;height:48px;font-size:8px}.drag{cursor:default}}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="progress" id="progress"></div>
+<button class="totop" id="totop" aria-label="Back to top">back<br>to top</button>
+<div class="navbar"><div class="wrap">
 <nav>
   <a href="#top" aria-label="okasion home"><svg viewBox="0 -100 480 130" class="logo" aria-label="okasion"><g><path d="M33.839999999999996 1.68Q24.72 1.68 17.64 -1.98Q10.559999999999999 -5.64 6.6 -13.02Q2.6399999999999997 -20.4 2.6399999999999997 -31.56Q2.6399999999999997 -43.199999999999996 6.779999999999999 -50.58Q10.92 -57.96 18.06 -61.5Q25.2 -65.03999999999999 34.199999999999996 -65.03999999999999Q43.559999999999995 -65.03999999999999 50.58 -61.379999999999995Q57.599999999999994 -57.72 61.49999999999999 -50.34Q65.39999999999999 -42.96 65.39999999999999 -31.68Q65.39999999999999 -20.04 61.25999999999999 -12.66Q57.12 -5.279999999999999 49.98 -1.7999999999999998Q42.839999999999996 1.68 33.839999999999996 1.68ZM34.32 -12.6Q38.04 -12.6 40.56 -14.7Q43.08 -16.8 44.4 -20.880000000000003Q45.72 -24.96 45.72 -30.599999999999998Q45.72 -36.839999999999996 44.28 -41.099999999999994Q42.839999999999996 -45.36 40.14 -47.64Q37.44 -49.92 33.6 -49.92Q30.0 -49.92 27.48 -47.82Q24.96 -45.72 23.64 -41.64Q22.32 -37.559999999999995 22.32 -31.799999999999997Q22.32 -22.68 25.5 -17.64Q28.68 -12.6 34.32 -12.6Z M72.35999999999999 0.0V-84.0H91.32V-39.48Q95.39999999999999 -41.64 98.34 -44.4Q101.28 -47.16 103.32 -50.339999999999996Q105.35999999999999 -53.519999999999996 106.61999999999999 -56.81999999999999Q107.88 -60.12 108.72 -63.36H131.04Q129.72 -58.559999999999995 127.25999999999999 -54.059999999999995Q124.79999999999998 -49.559999999999995 121.19999999999999 -45.66Q117.6 -41.76 112.85999999999999 -38.64Q108.11999999999999 -35.519999999999996 102.35999999999999 -33.48V-32.519999999999996Q109.79999999999998 -33.72 114.53999999999999 -32.82Q119.27999999999999 -31.919999999999998 122.03999999999999 -29.46Q124.79999999999998 -27.0 126.29999999999998 -23.28Q127.79999999999998 -19.56 128.64 -15.0L131.39999999999998 0.0H110.39999999999999L109.07999999999998 -10.559999999999999Q108.6 -14.399999999999999 107.75999999999999 -17.759999999999998Q106.91999999999999 -21.119999999999997 104.51999999999998 -23.22Q102.11999999999999 -25.32 96.96 -25.32H91.32V0.0Z M153.95999999999998 1.68Q149.15999999999997 1.68 144.83999999999997 0.0Q140.51999999999998 -1.68 137.76 -5.46Q134.99999999999997 -9.24 134.99999999999997 -15.6Q134.99999999999997 -21.48 137.27999999999997 -25.14Q139.55999999999997 -28.799999999999997 143.39999999999998 -31.02Q147.23999999999998 -33.24 151.79999999999998 -34.379999999999995Q156.35999999999999 -35.519999999999996 160.79999999999998 -36.36Q167.03999999999996 -37.559999999999995 170.15999999999997 -38.28Q173.27999999999997 -39.0 174.41999999999996 -39.96Q175.55999999999997 -40.92 175.55999999999997 -42.6Q175.55999999999997 -46.08 172.97999999999996 -47.879999999999995Q170.39999999999998 -49.68 166.2 -49.68Q163.55999999999997 -49.68 160.91999999999996 -48.72Q158.27999999999997 -47.76 156.59999999999997 -45.3Q154.92 -42.839999999999996 155.03999999999996 -38.28L137.76 -39.48Q137.51999999999998 -47.04 140.03999999999996 -52.019999999999996Q142.55999999999997 -57.0 146.94 -59.82Q151.32 -62.64 156.54 -63.839999999999996Q161.76 -65.03999999999999 166.92 -65.03999999999999Q176.39999999999998 -65.03999999999999 182.51999999999998 -61.5Q188.64 -57.96 191.57999999999998 -51.3Q194.51999999999998 -44.64 194.51999999999998 -35.16V-23.88Q194.51999999999998 -19.919999999999998 194.51999999999998 -15.899999999999999Q194.51999999999998 -11.879999999999999 194.51999999999998 -7.92Q194.51999999999998 -3.96 194.51999999999998 0.0H177.71999999999997Q177.71999999999997 -4.32 177.71999999999997 -8.76Q177.71999999999997 -13.2 177.71999999999997 -18.12H176.99999999999997Q176.51999999999998 -12.719999999999999 173.45999999999998 -8.219999999999999Q170.39999999999998 -3.7199999999999998 165.41999999999996 -1.02Q160.43999999999997 1.68 153.95999999999998 1.68ZM161.99999999999997 -12.48Q164.03999999999996 -12.48 166.37999999999997 -13.26Q168.71999999999997 -14.04 170.82 -15.84Q172.92 -17.64 174.23999999999998 -20.82Q175.55999999999997 -24.0 175.55999999999997 -28.68V-31.56L178.79999999999998 -31.919999999999998Q177.83999999999997 -30.36 175.61999999999998 -29.4Q173.39999999999998 -28.439999999999998 170.64 -27.9Q167.88 -27.36 165.06 -26.82Q162.23999999999998 -26.279999999999998 159.83999999999997 -25.38Q157.43999999999997 -24.48 155.93999999999997 -22.98Q154.43999999999997 -21.48 154.43999999999997 -18.84Q154.43999999999997 -15.719999999999999 156.65999999999997 -14.1Q158.87999999999997 -12.48 161.99999999999997 -12.48Z M230.15999999999997 1.68Q223.79999999999998 1.68 218.33999999999997 0.42Q212.87999999999997 -0.84 208.85999999999996 -3.5999999999999996Q204.83999999999997 -6.359999999999999 202.73999999999998 -10.98Q200.64 -15.6 200.99999999999997 -22.2L217.92 -23.64Q218.15999999999997 -19.68 219.71999999999997 -17.1Q221.27999999999997 -14.52 224.03999999999996 -13.32Q226.79999999999998 -12.12 230.76 -12.12Q234.47999999999996 -12.12 237.17999999999995 -13.379999999999999Q239.87999999999997 -14.639999999999999 239.87999999999997 -17.64Q239.87999999999997 -19.2 238.91999999999996 -20.22Q237.95999999999998 -21.24 235.38 -22.14Q232.79999999999998 -23.04 227.87999999999997 -24.24Q221.76 -25.8 216.83999999999997 -27.36Q211.92 -28.919999999999998 208.44 -31.08Q204.95999999999998 -33.24 203.15999999999997 -36.42Q201.35999999999999 -39.6 201.35999999999999 -44.28Q201.35999999999999 -50.879999999999995 204.89999999999998 -55.5Q208.43999999999997 -60.12 214.67999999999998 -62.58Q220.92 -65.03999999999999 229.07999999999998 -65.03999999999999Q236.39999999999998 -65.03999999999999 242.76 -62.75999999999999Q249.11999999999998 -60.48 252.77999999999997 -55.31999999999999Q256.44 -50.16 255.47999999999996 -41.64L238.91999999999996 -40.08Q239.27999999999997 -43.559999999999995 237.95999999999998 -46.019999999999996Q236.64 -48.48 234.11999999999998 -49.739999999999995Q231.59999999999997 -51.0 227.99999999999997 -51.0Q223.92 -51.0 221.7 -49.5Q219.47999999999996 -48.0 219.47999999999996 -45.72Q219.47999999999996 -43.92 220.85999999999996 -42.66Q222.23999999999998 -41.4 225.17999999999998 -40.5Q228.11999999999998 -39.6 232.79999999999998 -38.519999999999996Q236.87999999999997 -37.68 241.32 -36.36Q245.76 -35.04 249.59999999999997 -32.82Q253.43999999999997 -30.599999999999998 255.83999999999997 -27.0Q258.23999999999995 -23.4 258.23999999999995 -17.88Q258.23999999999995 -12.0 254.99999999999997 -7.5600000000000005Q251.76 -3.12 245.51999999999998 -0.7200000000000001Q239.27999999999997 1.68 230.15999999999997 1.68Z" fill="#3B2A22" /><path d="M274.08 -67.92Q268.55999999999995 -67.92 265.61999999999995 -70.26Q262.67999999999995 -72.60000000000001 262.67999999999995 -77.04Q262.67999999999995 -81.60000000000001 265.61999999999995 -83.94Q268.55999999999995 -86.28 274.08 -86.28Q279.71999999999997 -86.28 282.65999999999997 -83.88Q285.59999999999997 -81.48 285.59999999999997 -77.04Q285.59999999999997 -72.72 282.65999999999997 -70.32Q279.71999999999997 -67.92 274.08 -67.92Z" fill="#E0B84C" /><path d="M264.47999999999996 0.0V-63.36H283.91999999999996V0.0Z" fill="#3B2A22" /><polygon points="302.90764799999994,-59.127551999999994 368.78177279999994,-59.127551999999994 395.3625599999999,-31.68 368.78177279999994,-4.232448000000003 302.90764799999994,-4.232448000000003" fill="#A8342F" stroke="#A8342F" stroke-width="17.335295999999996" stroke-linejoin="round"/><circle cx="326.0213759999999" cy="-31.68" r="16.612992" fill="#E0B84C"/><polyline points="355.72251647999997,-43.959168 365.54585088,-31.68 355.72251647999997,-19.400832" fill="none" stroke="#F4EFD8" stroke-width="7.584191999999999" stroke-linecap="round" stroke-linejoin="round"/><polyline points="373.2889497599999,-43.959168 383.11228415999994,-31.68 373.2889497599999,-19.400832" fill="none" stroke="#F4EFD8" stroke-width="7.584191999999999" stroke-linecap="round" stroke-linejoin="round"/><path d="M417.3502079999999 0.0V-35.879999999999995V-63.36H433.7902079999999V-37.559999999999995H434.75020799999993Q435.4702079999999 -46.92 437.87020799999993 -52.980000000000004Q440.2702079999999 -59.04 444.7102079999999 -62.03999999999999Q449.1502079999999 -65.03999999999999 455.9902079999999 -65.03999999999999Q466.3102079999999 -65.03999999999999 471.5302079999999 -58.199999999999996Q476.75020799999993 -51.36 476.75020799999993 -37.8V0.0H457.3102079999999V-35.28Q457.3102079999999 -41.76 455.33020799999986 -45.0Q453.3502079999999 -48.239999999999995 449.0302079999999 -48.239999999999995Q445.4302079999999 -48.239999999999995 442.6702079999999 -45.72Q439.9102079999999 -43.199999999999996 438.3502079999999 -37.559999999999995Q436.7902079999999 -31.919999999999998 436.7902079999999 -22.439999999999998V0.0Z" fill="#3B2A22" /></g></svg></a>
   <ul><li><a href="#problem">the problem</a></li><li><a href="#how">how it works</a></li><li><a href="#tags">style tags</a></li><li><a href="#who">who it's for</a></li><li><a href="#team">team</a></li></ul>
   <a class="btn primary" href="#join">join the waitlist ››</a>
 </nav>
-
+</div></div>
+<div class="wrap">
 <header class="hero" id="top">
   <div class="board">
-    <figure class="sticker" style="left:57%;top:2%;transform:rotate(6deg)"><div class="ph" style="background:var(--blush)">💄</div><figcaption class="mono">soft_glam.jpg</figcaption></figure>
-    <figure class="sticker" style="left:76%;top:20%;transform:rotate(-5deg)"><div class="ph chk"></div><figcaption class="mono">0214_studio.jpg</figcaption></figure>
-    <figure class="sticker" style="left:61%;top:50%;transform:rotate(3deg)"><div class="ph" style="background:var(--olive);color:var(--cream)">🌸</div><figcaption class="mono">garden_set.png</figcaption></figure>
-    <figure class="sticker" style="left:84%;top:60%;transform:rotate(-8deg)"><div class="ph" style="background:var(--blue)">📸</div><figcaption class="mono">film_candid.jpg</figcaption></figure>
+    <figure class="sticker drag" style="left:57%;top:2%;transform:rotate(6deg)"><div class="ph" style="background:var(--blush)">💄</div><figcaption class="mono">soft_glam.jpg</figcaption></figure>
+    <figure class="sticker drag" style="left:76%;top:20%;transform:rotate(-5deg)"><div class="ph chk"></div><figcaption class="mono">0214_studio.jpg</figcaption></figure>
+    <figure class="sticker drag" style="left:61%;top:50%;transform:rotate(3deg)"><div class="ph" style="background:var(--olive);color:var(--cream)">🌸</div><figcaption class="mono">garden_set.png</figcaption></figure>
+    <figure class="sticker drag" style="left:84%;top:60%;transform:rotate(-8deg)"><div class="ph" style="background:var(--blue)">📸</div><figcaption class="mono">film_candid.jpg</figcaption></figure>
     <div class="folder" style="left:54%;top:78%"><span></span><div class="mono">moodboard.zip</div></div>
     <div class="star" style="left:52%;top:10%">✳</div><div class="star" style="left:95%;top:6%">✳</div><div class="star" style="left:72%;top:90%;color:var(--mustard)">✳</div>
   </div>
@@ -188,10 +240,10 @@ footer .logo{height:28px}
       <p class="serif" style="font-size:26px;color:var(--brick)">the creatives exist. the matching doesn't.</p>
     </div>
     <div class="notes">
-      <div class="note" style="left:0;top:0;background:var(--mustard);transform:rotate(-4deg)">"sino magaling sa soft glam na hindi cakey?"<span class="mono">— debutante, 18</span></div>
-      <div class="note" style="left:52%;top:8%;background:var(--blue);transform:rotate(3deg)">"need a photographer with a film look. budget: student."<span class="mono">— grad, 21</span></div>
-      <div class="note" style="left:8%;top:48%;background:var(--blush);transform:rotate(2deg)">"rent or custom? I literally don't know where to start."<span class="mono">— first job, 24</span></div>
-      <div class="note" style="left:56%;top:56%;background:var(--paper);transform:rotate(-3deg)">"my MUA ghosted me 3 days before the event."<span class="mono">— bride, 28</span></div>
+      <div class="note drag reveal" style="left:0;top:0;background:var(--mustard);transform:rotate(-4deg)">"sino magaling sa soft glam na hindi cakey?"<span class="mono">— debutante, 18</span></div>
+      <div class="note drag reveal" style="left:52%;top:8%;background:var(--blue);transform:rotate(3deg)">"need a photographer with a film look. budget: student."<span class="mono">— grad, 21</span></div>
+      <div class="note drag reveal" style="left:8%;top:48%;background:var(--blush);transform:rotate(2deg)">"rent or custom? I literally don't know where to start."<span class="mono">— first job, 24</span></div>
+      <div class="note drag reveal" style="left:56%;top:56%;background:var(--paper);transform:rotate(-3deg)">"my MUA ghosted me 3 days before the event."<span class="mono">— bride, 28</span></div>
     </div>
   </div>
 </section>
@@ -213,6 +265,7 @@ footer .logo{height:28px}
   <h2>every creative, tagged by taste.</h2>
   <p class="lead">Six categories at launch, each with a fixed set of styles. Tap to try the filter.</p>
   <div class="cats"><div class="cat"><h3><span class="emoji">💄</span>Makeup Artist</h3><div class="chips"><button class="chip on">Soft Glam</button><button class="chip">Natural</button><button class="chip">Full Glam</button><button class="chip">Clean Girl</button><button class="chip">Korean</button><button class="chip">Editorial</button><button class="chip">Bridal</button><button class="chip">Debut</button></div></div><div class="cat"><h3><span class="emoji">💇</span>Hairstylist</h3><div class="chips"><button class="chip">Sleek</button><button class="chip">Curls</button><button class="chip on">Hollywood Waves</button><button class="chip">Updo</button><button class="chip">Braids</button><button class="chip">Korean</button><button class="chip">Romantic</button><button class="chip">Editorial</button></div></div><div class="cat"><h3><span class="emoji">👗</span>Dressmaker / Designer</h3><div class="chips"><button class="chip">Minimalist</button><button class="chip">Classic</button><button class="chip">Modern</button><button class="chip">Traditional</button><button class="chip on">Romantic</button><button class="chip">Glamorous</button><button class="chip">Avant-Garde</button></div></div><div class="cat"><h3><span class="emoji">📸</span>Photographer</h3><div class="chips"><button class="chip">Candid</button><button class="chip">Editorial</button><button class="chip on">Cinematic</button><button class="chip">Romantic</button><button class="chip">Film</button><button class="chip">Minimalist</button><button class="chip">Street</button><button class="chip">Studio</button></div></div><div class="cat"><h3><span class="emoji">🎨</span>Event Stylist</h3><div class="chips"><button class="chip">Minimalist</button><button class="chip">Garden</button><button class="chip">Rustic</button><button class="chip">Elegant</button><button class="chip">Boho</button><button class="chip">Modern</button><button class="chip on">Filipino Traditional</button><button class="chip">Luxury</button></div></div><div class="cat"><h3><span class="emoji">🌸</span>Florist</h3><div class="chips"><button class="chip">Pastel</button><button class="chip">Monochrome</button><button class="chip">Wildflower</button><button class="chip">Romantic</button><button class="chip">Minimalist</button><button class="chip on">Tropical</button><button class="chip">Classic</button></div></div></div>
+  <div class="tagcount">your vibe so far: <b id="tagN">0</b> tags</div>
   <p class="soon">also on the board soon: <span>nails</span><span>accessories</span><span>gown rental</span><span>videographer</span><span>event decorator</span></p>
 </section>
 
@@ -295,6 +348,35 @@ footer .logo{height:28px}
 </div>
 <script>
 document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('on')));
+
+(function(){
+  /* scroll progress + back to top */
+  const bar=document.getElementById('progress'),top=document.getElementById('totop');
+  function onScroll(){const h=document.documentElement,max=h.scrollHeight-h.clientHeight;bar.style.width=(h.scrollTop/max*100)+'%';top.classList.toggle('show',h.scrollTop>600);spy();}
+  top.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+  /* nav scroll-spy */
+  const links=[...document.querySelectorAll('nav ul a[href^="#"]')];
+  const secs=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  function spy(){let cur=null;secs.forEach(sec=>{if(sec.getBoundingClientRect().top<=140)cur=sec;});links.forEach(a=>a.classList.toggle('active',cur&&a.getAttribute('href')==='#'+cur.id));}
+  addEventListener('scroll',onScroll,{passive:true});onScroll();
+  /* reveal notes once */
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.2});
+  document.querySelectorAll('.reveal').forEach((el,i)=>{el.style.transitionDelay=(i%4*90)+'ms';io.observe(el);});
+  /* draggable notes & stickers (mouse/pen only, keeps touch scrolling free) */
+  if(matchMedia('(hover:hover) and (pointer:fine)').matches){
+    document.querySelectorAll('.drag').forEach(el=>{
+      let sx,sy,ox=0,oy=0,down=false;
+      el.addEventListener('pointerdown',e=>{if(e.button!==0)return;down=true;sx=e.clientX-ox;sy=e.clientY-oy;el.classList.add('held');el.setPointerCapture(e.pointerId);e.preventDefault();});
+      el.addEventListener('pointermove',e=>{if(!down)return;ox=e.clientX-sx;oy=e.clientY-sy;el.style.translate=ox+'px '+oy+'px';});
+      const up=()=>{down=false;el.classList.remove('held');};
+      el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);
+    });
+  }
+  /* live tag counter */
+  const n=document.getElementById('tagN');
+  document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{n.textContent=document.querySelectorAll('.chip.on').length;}));
+  n.textContent=document.querySelectorAll('.chip.on').length;
+})();
 </script>
 </body>
 </html>
